@@ -1,36 +1,55 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Kotoba Companion
 
-## Getting Started
+Kotoba Companion is a mobile-first beginner Japanese learning app built with Next.js, shadcn/ui, and a Supabase-ready data model. The MVP focuses on short guided lessons, visible milestones, a friendly gamified routine, and a protected admin workflow for AI-assisted lesson drafting and publishing.
 
-First, run the development server:
+## Stack
+
+- Next.js App Router + TypeScript
+- Tailwind CSS v4
+- shadcn/ui base components
+- Supabase-ready auth and database helpers
+- Vercel-friendly deployment target
+
+## Product Areas
+
+- `src/app/sign-up`, `src/app/sign-in`, `src/app/onboarding`
+  - learner entry and onboarding flows
+- `src/app/dashboard`, `src/app/learn`, `src/app/path`, `src/app/progress`, `src/app/settings`
+  - learner experience for fixed-path study, lesson play, and progress review
+- `src/app/admin`
+  - admin-only lesson draft generation, review, and publishing workspace
+- `supabase/migrations/202604160300_init.sql`
+  - starter schema, indexes, and row-level-security policies
+
+## Local Development
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+The app runs in a demo-capable mode by default so it works without external services. To connect Supabase, copy `.env.example` to `.env.local` and add:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+NEXT_PUBLIC_SUPABASE_URL=...
+NEXT_PUBLIC_SUPABASE_ANON_KEY=...
+SUPABASE_SERVICE_ROLE_KEY=...
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+To support the intended MVP auth methods, enable these providers in `Supabase -> Authentication`:
 
-## Learn More
+- `Email`
+  - keep passwordless email enabled for magic-link login
+- `Google`
+  - create a Google OAuth client in Google Cloud
+  - add the callback / redirect URI shown by Supabase to that Google client
+  - paste the Google client ID and secret into `Authentication -> Providers -> Google`
 
-To learn more about Next.js, take a look at the following resources:
+Also make sure `Authentication -> URL Configuration` includes the right site URL and redirect URLs for both local and deployed environments, including:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- `http://localhost:3000/auth/callback`
+- your production callback URL on Vercel
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Deployment
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Use Vercel for deployment and set the same environment variables there. The included Supabase helpers and SQL migration are designed to be the starting point for replacing the demo store with real persisted auth, learner progress, and admin publishing flows.
